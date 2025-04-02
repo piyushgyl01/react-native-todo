@@ -25,7 +25,7 @@ interface TaskListScreenProps {
 }
 
 const TaskListScreen: React.FC<TaskListScreenProps> = ({navigation}) => {
-  const { logout} = useAuth();
+  const {logout} = useAuth();
   const {tasks, isLoading, sortTasks, filterTasks, clearFilters, refreshTasks} =
     useTasks();
   const [filterVisible, setFilterVisible] = useState(false);

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
+import React, {useState, useEffect} from 'react';
+import {
   View,
   Text,
   TextInput,
@@ -9,18 +9,21 @@ import {
   Platform,
   ScrollView,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { TaskStackParamList } from '../navigation/AppNavigator';
-import { useTasks } from '../context/TaskContext';
-import { Task } from '../models/Task';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+import {TaskStackParamList} from '../navigation/AppNavigator';
+import {useTasks} from '../context/TaskContext';
+import {Task} from '../models/Task';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CategorySelector from '../components/CategorySelector';
 import PrioritySelector from '../components/PrioritySelector';
 
-type EditTaskScreenNavigationProp = StackNavigationProp<TaskStackParamList, 'EditTask'>;
+type EditTaskScreenNavigationProp = StackNavigationProp<
+  TaskStackParamList,
+  'EditTask'
+>;
 type EditTaskScreenRouteProp = RouteProp<TaskStackParamList, 'EditTask'>;
 
 interface EditTaskScreenProps {
@@ -28,10 +31,10 @@ interface EditTaskScreenProps {
   route: EditTaskScreenRouteProp;
 }
 
-const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) => {
-  const { taskId } = route.params;
-  const { tasks, updateTask } = useTasks();
-  
+const EditTaskScreen: React.FC<EditTaskScreenProps> = ({navigation, route}) => {
+  const {taskId} = route.params;
+  const {tasks, updateTask} = useTasks();
+
   const [task, setTask] = useState<Task | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -45,7 +48,7 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
   useEffect(() => {
     // Find the task from the tasks array
     const foundTask = tasks.find(t => t.id === taskId);
-    
+
     if (foundTask) {
       setTask(foundTask);
       setTitle(foundTask.title);
@@ -57,7 +60,7 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
       Alert.alert('Error', 'Task not found');
       navigation.goBack();
     }
-    
+
     setIsLoading(false);
   }, [taskId, tasks]);
 
@@ -103,8 +106,7 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
+      style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
@@ -132,9 +134,9 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Priority</Text>
-            <PrioritySelector 
-              selectedPriority={priority} 
-              onSelectPriority={setPriority} 
+            <PrioritySelector
+              selectedPriority={priority}
+              onSelectPriority={setPriority}
             />
           </View>
 
@@ -146,12 +148,11 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          {/* <View style={styles.inputContainer}>
             <Text style={styles.label}>Deadline</Text>
             <TouchableOpacity
               style={styles.dateButton}
-              onPress={() => setShowDatePicker(true)}
-            >
+              onPress={() => setShowDatePicker(true)}>
               <Text style={styles.dateButtonText}>
                 {deadline ? deadline.toLocaleDateString() : 'Select a deadline'}
               </Text>
@@ -159,12 +160,11 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
             {deadline && (
               <TouchableOpacity
                 style={styles.clearButton}
-                onPress={() => setDeadline(null)}
-              >
+                onPress={() => setDeadline(null)}>
                 <Text style={styles.clearButtonText}>Clear deadline</Text>
               </TouchableOpacity>
             )}
-          </View>
+          </View> */}
 
           {showDatePicker && (
             <DateTimePicker
@@ -179,8 +179,7 @@ const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ navigation, route }) =>
           <TouchableOpacity
             style={styles.saveButton}
             onPress={handleSave}
-            disabled={isSaving}
-          >
+            disabled={isSaving}>
             <Text style={styles.saveButtonText}>
               {isSaving ? 'Saving...' : 'Save Changes'}
             </Text>
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,

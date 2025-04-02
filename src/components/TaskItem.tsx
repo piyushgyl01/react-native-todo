@@ -1,3 +1,4 @@
+// src/components/TaskItem.tsx
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Task} from '../models/Task';
@@ -13,9 +14,10 @@ const TaskItem: React.FC<TaskItemProps> = ({task, onPress}) => {
 
   const toggleComplete = async () => {
     try {
+      console.log(`Toggling completion for task with ID: ${task.id}`);
       await updateTask(task.id, {completed: !task.completed});
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error('Error updating task completion:', error);
     }
   };
 

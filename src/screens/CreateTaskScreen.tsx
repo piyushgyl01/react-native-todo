@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { 
+import React, {useState} from 'react';
+import {
   View,
   Text,
   TextInput,
@@ -8,31 +8,35 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert
+  Alert,
 } from 'react-native';
-import { useTasks } from '../context/TaskContext';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { TaskStackParamList } from '../navigation/AppNavigator';
+import {useTasks} from '../context/TaskContext';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {TaskStackParamList} from '../navigation/AppNavigator';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CategorySelector from '../components/CategorySelector';
 import PrioritySelector from '../components/PrioritySelector';
 
-type CreateTaskScreenNavigationProp = StackNavigationProp<TaskStackParamList, 'CreateTask'>;
+type CreateTaskScreenNavigationProp = StackNavigationProp<
+  TaskStackParamList,
+  'CreateTask'
+>;
 
 interface CreateTaskScreenProps {
   navigation: CreateTaskScreenNavigationProp;
 }
 
-const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({ navigation }) => {
+const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({navigation}) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [category, setCategory] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false); // Add state for time picker
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { createTask } = useTasks();
+
+  const {createTask} = useTasks();
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -52,23 +56,43 @@ const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({ navigation }) => {
       });
       navigation.goBack();
     } catch (error) {
+      console.log(error);
       Alert.alert('Error', 'Failed to create task');
       setIsLoading(false);
     }
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === 'ios');
+    setShowDatePicker(Platform.OS === 'ios'); // Keep open on iOS
     if (selectedDate) {
-      setDeadline(selectedDate);
+      if (Platform.OS === 'android') {
+        // On Android, after selecting the date, show the time picker
+        setDeadline(selectedDate);
+        setShowDatePicker(false);
+        setShowTimePicker(true); // Show time picker next
+      } else {
+        setDeadline(selectedDate); // On iOS, set the full datetime
+      }
+    } else {
+      setShowDatePicker(false); // Close if no date is selected
     }
+  };
+
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(Platform.OS === 'ios'); // Keep open on iOS
+    if (selectedTime && deadline) {
+      const updatedDate = new Date(deadline);
+      updatedDate.setHours(selectedTime.getHours());
+      updatedDate.setMinutes(selectedTime.getMinutes());
+      setDeadline(updatedDate);
+    }
+    setShowTimePicker(false); // Close time picker on Android
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
+      style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
@@ -96,9 +120,9 @@ const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({ navigation }) => {
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Priority</Text>
-            <PrioritySelector 
-              selectedPriority={priority} 
-              onSelectPriority={setPriority} 
+            <PrioritySelector
+              selectedPriority={priority}
+              onSelectPriority={setPriority}
             />
           </View>
 
@@ -110,33 +134,42 @@ const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({ navigation }) => {
             />
           </View>
 
-          <View style={styles.inputContainer}>
+          {/* <View style={styles.inputContainer}>
             <Text style={styles.label}>Deadline</Text>
             <TouchableOpacity
               style={styles.dateButton}
-              onPress={() => setShowDatePicker(true)}
-            >
+              onPress={() => setShowDatePicker(true)}>
               <Text style={styles.dateButtonText}>
-                {deadline ? deadline.toLocaleDateString() : 'Select a deadline'}
+                {deadline
+                  ? deadline.toLocaleString() // Show both date and time
+                  : 'Select a deadline'}
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           {showDatePicker && (
             <DateTimePicker
               value={deadline || new Date()}
-              mode="datetime"
+              mode="date" // Use "date" mode for the date picker
               display="default"
               onChange={handleDateChange}
               minimumDate={new Date()}
             />
           )}
 
+          {showTimePicker && (
+            <DateTimePicker
+              value={deadline || new Date()}
+              mode="time" // Use "time" mode for the time picker
+              display="default"
+              onChange={handleTimeChange}
+            />
+          )}
+
           <TouchableOpacity
             style={styles.saveButton}
             onPress={handleSave}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             <Text style={styles.saveButtonText}>
               {isLoading ? 'Creating...' : 'Create Task'}
             </Text>
@@ -147,6 +180,7 @@ const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({ navigation }) => {
   );
 };
 
+// Styles remain the same
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -161,7 +195,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,

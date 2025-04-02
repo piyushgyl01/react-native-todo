@@ -1,3 +1,4 @@
+// src/screens/TaskDetailScreen.tsx (partial)
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -40,13 +41,15 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
 
     if (foundTask) {
       setTask(foundTask);
+      console.log(`Found task with ID: ${taskId}`, foundTask);
     } else {
+      console.error(`Task not found with ID: ${taskId}`);
       Alert.alert('Error', 'Task not found');
       navigation.goBack();
     }
 
     setIsLoading(false);
-  }, [taskId, tasks]);
+  }, [taskId, tasks, navigation]);
 
   useEffect(() => {
     // Set up header right button
@@ -63,8 +66,10 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
     if (!task) return;
 
     try {
+      console.log(`Toggling completion for task with ID: ${task.id}`);
       await updateTask(task.id, {completed: !task.completed});
     } catch (error) {
+      console.error('Error updating task:', error);
       Alert.alert('Error', 'Failed to update task');
     }
   };
@@ -82,9 +87,11 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
           style: 'destructive',
           onPress: async () => {
             try {
+              console.log(`Deleting task with ID: ${task.id}`);
               await deleteTask(task.id);
               navigation.goBack();
             } catch (error) {
+              console.error('Error deleting task:', error);
               Alert.alert('Error', 'Failed to delete task');
             }
           },
@@ -94,9 +101,12 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
   };
 
   const handleEdit = () => {
-    navigation.navigate('EditTask', {taskId});
+    if (task) {
+      navigation.navigate('EditTask', {taskId: task.id});
+    }
   };
 
+  // Rest of component remains the same...
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -193,6 +203,11 @@ const TaskDetailScreen: React.FC<TaskDetailScreenProps> = ({
             <Text style={styles.created}>
               {new Date(task.createdAt).toLocaleDateString()}
             </Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Task ID</Text>
+            <Text style={styles.created}>{task.id}</Text>
           </View>
         </View>
       </ScrollView>
