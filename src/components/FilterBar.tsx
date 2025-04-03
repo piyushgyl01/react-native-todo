@@ -17,15 +17,21 @@ interface FilterBarProps {
 const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
   // Use context to sync with global filter and sort state
   const {activeFilters, currentSortBy} = useTasks();
-  
+
   // Local state for filter UI
-  const [category, setCategory] = useState<string | undefined>(activeFilters.category);
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | undefined>(activeFilters.priority);
-  const [completed, setCompleted] = useState<boolean | undefined>(activeFilters.completed);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [sortBy, setSortBy] = useState<'priority' | 'deadline' | 'createdAt' | 'title' | undefined>(
-    currentSortBy || undefined
+  const [category, setCategory] = useState<string | undefined>(
+    activeFilters.category,
   );
+  const [priority, setPriority] = useState<
+    'low' | 'medium' | 'high' | undefined
+  >(activeFilters.priority);
+  const [completed, setCompleted] = useState<boolean | undefined>(
+    activeFilters.completed,
+  );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [sortBy, setSortBy] = useState<
+    'priority' | 'deadline' | 'createdAt' | 'title' | undefined
+  >(currentSortBy || undefined);
 
   // Sync local state with context when activeFilters change
   useEffect(() => {
@@ -33,15 +39,19 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
     setPriority(activeFilters.priority);
     setCompleted(activeFilters.completed);
   }, [activeFilters]);
-  
+
   // Sync sort state with context
   useEffect(() => {
     setSortBy(currentSortBy || undefined);
   }, [currentSortBy]);
 
   const applyFilters = () => {
-    console.log('Applying filters from FilterBar modal:', {category, completed, priority});
-    
+    console.log('Applying filters from FilterBar modal:', {
+      category,
+      completed,
+      priority,
+    });
+
     const filters: {
       category?: string;
       completed?: boolean;
@@ -51,22 +61,22 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
     if (category) {
       filters.category = category;
     }
-    
+
     if (completed !== undefined) {
       filters.completed = completed;
     }
-    
+
     if (priority) {
       filters.priority = priority;
     }
 
     onFilter(filters);
-    
+
     // Apply sorting if selected
     if (sortBy) {
       onSort(sortBy);
     }
-    
+
     setModalVisible(false);
   };
 
@@ -92,14 +102,18 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
   const isFiltering = () => {
     return completed !== undefined || !!category || !!priority;
   };
-  
+
   // Helper to show active sort in button text
   const getSortLabel = () => {
-    if (!sortBy) return 'Advanced Filters';
-    
+    if (!sortBy) {
+      return 'Advanced Filters';
+    }
+
     let filterStatus = isFiltering() ? 'Filters' : '';
-    let sortStatus = `Sort: ${sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}`;
-    
+    let sortStatus = `Sort: ${
+      sortBy.charAt(0).toUpperCase() + sortBy.slice(1)
+    }`;
+
     return filterStatus ? `${filterStatus} + ${sortStatus}` : sortStatus;
   };
 
@@ -107,8 +121,8 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={[
-          styles.filterButton, 
-          (isFiltering() || sortBy) && styles.activeFilterButton
+          styles.filterButton,
+          (isFiltering() || sortBy) && styles.activeFilterButton,
         ]}
         onPress={() => setModalVisible(true)}>
         <Text style={styles.filterButtonText}>
@@ -124,12 +138,18 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
             const newValue = completed === true ? undefined : true;
             setCompleted(newValue);
             onFilter({
-              category, 
-              completed: newValue, 
-              priority
+              category,
+              completed: newValue,
+              priority,
             });
           }}>
-          <Text style={[styles.chipText, completed === true && styles.activeChipText]}>Done</Text>
+          <Text
+            style={[
+              styles.chipText,
+              completed === true && styles.activeChipText,
+            ]}>
+            Done
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -139,14 +159,20 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
             const newValue = completed === false ? undefined : false;
             setCompleted(newValue);
             onFilter({
-              category, 
-              completed: newValue, 
-              priority
+              category,
+              completed: newValue,
+              priority,
             });
           }}>
-          <Text style={[styles.chipText, completed === false && styles.activeChipText]}>Active</Text>
+          <Text
+            style={[
+              styles.chipText,
+              completed === false && styles.activeChipText,
+            ]}>
+            Active
+          </Text>
         </TouchableOpacity>
-        
+
         {(isFiltering() || sortBy) && (
           <TouchableOpacity
             style={[styles.chip, styles.clearChip]}
@@ -178,10 +204,19 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     completed === true && styles.activeButton,
                   ]}
                   onPress={() => {
-                    console.log('Setting completed filter to:', completed === true ? undefined : true);
+                    console.log(
+                      'Setting completed filter to:',
+                      completed === true ? undefined : true,
+                    );
                     setCompleted(completed === true ? undefined : true);
                   }}>
-                  <Text style={[styles.buttonText, completed === true && styles.activeButtonText]}>Completed</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      completed === true && styles.activeButtonText,
+                    ]}>
+                    Completed
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -189,10 +224,19 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     completed === false && styles.activeButton,
                   ]}
                   onPress={() => {
-                    console.log('Setting active filter to:', completed === false ? undefined : false);
+                    console.log(
+                      'Setting active filter to:',
+                      completed === false ? undefined : false,
+                    );
                     setCompleted(completed === false ? undefined : false);
                   }}>
-                  <Text style={[styles.buttonText, completed === false && styles.activeButtonText]}>Active</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      completed === false && styles.activeButtonText,
+                    ]}>
+                    Active
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -230,7 +274,13 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     sortBy === 'deadline' && styles.activeButton,
                   ]}
                   onPress={() => handleSort('deadline')}>
-                  <Text style={[styles.buttonText, sortBy === 'deadline' && styles.activeButtonText]}>Deadline</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      sortBy === 'deadline' && styles.activeButtonText,
+                    ]}>
+                    Deadline
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -238,7 +288,13 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     sortBy === 'priority' && styles.activeButton,
                   ]}
                   onPress={() => handleSort('priority')}>
-                  <Text style={[styles.buttonText, sortBy === 'priority' && styles.activeButtonText]}>Priority</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      sortBy === 'priority' && styles.activeButtonText,
+                    ]}>
+                    Priority
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.rowButtons}>
@@ -248,7 +304,13 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     sortBy === 'createdAt' && styles.activeButton,
                   ]}
                   onPress={() => handleSort('createdAt')}>
-                  <Text style={[styles.buttonText, sortBy === 'createdAt' && styles.activeButtonText]}>Date Created</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      sortBy === 'createdAt' && styles.activeButtonText,
+                    ]}>
+                    Date Created
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
@@ -256,7 +318,13 @@ const FilterBar: React.FC<FilterBarProps> = ({onFilter, onClear, onSort}) => {
                     sortBy === 'title' && styles.activeButton,
                   ]}
                   onPress={() => handleSort('title')}>
-                  <Text style={[styles.buttonText, sortBy === 'title' && styles.activeButtonText]}>Title</Text>
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      sortBy === 'title' && styles.activeButtonText,
+                    ]}>
+                    Title
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

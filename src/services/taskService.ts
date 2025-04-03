@@ -7,7 +7,7 @@ const API_URL = 'http://10.0.2.2:5002/api/tasks';
 // Helper function to normalize MongoDB _id to id
 const normalizeTask = (task: any): Task => {
   if (!task) return {} as Task;
-  
+
   return {
     id: task._id, // Use MongoDB's _id as client-side id
     title: task.title,
@@ -153,7 +153,7 @@ export const taskService = {
   ): Task[] {
     console.log('Filtering tasks with:', filters);
     console.log('Original task count:', tasks.length);
-    
+
     // Return all tasks if no filters are applied
     if (!filters || Object.keys(filters).length === 0) {
       return tasks;
@@ -197,49 +197,51 @@ export const taskService = {
       console.log('No tasks to sort');
       return [];
     }
-    
+
     console.log(`Sorting ${tasks.length} tasks by: ${sortBy}`);
-    
+
     // Create a copy to avoid mutating the original array
     const tasksCopy = [...tasks];
-    
+
     try {
       const sorted = tasksCopy.sort((a, b) => {
         switch (sortBy) {
           case 'priority':
             const priorityValues = {high: 3, medium: 2, low: 1};
             return priorityValues[b.priority] - priorityValues[a.priority];
-  
+
           case 'deadline':
             // Handle undefined deadlines - put them at the end
             if (!a.deadline && !b.deadline) return 0;
             if (!a.deadline) return 1; // a comes after b
             if (!b.deadline) return -1; // a comes before b
-            
+
             const aDeadline = new Date(a.deadline).getTime();
             const bDeadline = new Date(b.deadline).getTime();
             return aDeadline - bDeadline;
-  
+
           case 'createdAt':
             // Both should have createdAt, but handle the edge case
             if (!a.createdAt || !b.createdAt) {
               console.warn('Task missing createdAt during sort');
               return 0;
             }
-            
+
             // Sort newest first (descending)
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+
           case 'title':
             // Case insensitive title sort
             return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
-  
+
           default:
             console.warn(`Unknown sort type: ${sortBy}`);
             return 0;
         }
       });
-      
+
       console.log(`Sorting complete: ${sortBy}`);
       return sorted;
     } catch (error) {
