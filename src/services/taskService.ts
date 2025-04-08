@@ -2,19 +2,19 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Task} from '../models/Task';
 
-const API_URL = 'http://10.0.2.2:5002/api/tasks';
+const API_URL = 'https://react-native-todo-backend-eta.vercel.app/api/tasks';
 
 // Helper function to normalize MongoDB _id to id
 const normalizeTask = (task: any): Task => {
   if (!task) return {} as Task;
 
   return {
-    id: task._id, // Use MongoDB's _id as client-side id
+    id: task._id,
     title: task.title,
     description: task.description,
     completed: task.completed,
     priority: task.priority,
-    deadline: task.deadline ? new Date(task.deadline) : undefined,
+    deadline: task.deadline ? task.deadline : undefined,
     category: task.category,
     createdAt: new Date(task.createdAt),
   };

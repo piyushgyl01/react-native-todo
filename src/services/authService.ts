@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User} from '../models/User';
 
-const API_URL = 'http://10.0.2.2:5002/api/auth'; // Use 10.0.2.2 for Android emulator to access localhost
+const API_URL = 'https://react-native-todo-backend-eta.vercel.app/api/auth';
 
 export const authService = {
   async register(email: string, password: string): Promise<User> {
